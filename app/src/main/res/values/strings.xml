@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Fertilizer Calculator</string>
+    <string name="nitrogen">Nitrogen</string>
+    <string name="phosphorous">Phosphorus</string>
+    <string name="potassium">Potassium</string>
+    <string name="low">Low</string>
+    <string name="moderate">Moderate</string>
+    <string name="high">High</string>
+    <string name="ph_value">ph Value</string>
+    <string name="organic_matters">Organic Matters</string>
+    <string name="soil_texture">Soil Texture</string>
+    <string name="loam">Loam</string>
+    <string name="clay_loam">Clay Loam</string>
+    <string name="sandy_loam">Sandy Loam</string>
+    <string name="hill">Hill</string>
+    <string name="terai">Terai</string>
+    <string name="region">Region</string>
+    <string name="crop_image">Crop Image</string>
+</resources>
