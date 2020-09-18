@@ -41,6 +41,7 @@
                     android:layout_height="wrap_content"/>
 
                 <Button
+                    android:id="@+id/chooseButton"
                     android:textAllCaps="false"
                     android:padding="8dp"
                     android:background="@color/colorPrimary"
