@@ -16,4 +16,11 @@
     <string name="terai">Terai</string>
     <string name="region">Region</string>
     <string name="crop_image">Crop Image</string>
+    <string name="calculate_fertilizers">Calculate Fertilizers</string>
+    <string name="kg_per_ropani">Kg/Ropani</string>
+    <string name="dash">-</string>
+    <string name="urea">Urea</string>
+    <string name="dap">DAP</string>
+    <string name="mop">MOP</string>
+    <string name="om">Organic Manure</string>
 </resources>

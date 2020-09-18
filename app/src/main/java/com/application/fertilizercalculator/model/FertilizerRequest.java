@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 public class FertilizerRequest {
 
     @SerializedName("cropId")
-    private Long mCropId;
+    private Integer mCropId;
     @SerializedName("k_amount_in_soil")
     private String mKAmountInSoil;
     @SerializedName("n_amount_in_soil")
@@ -22,11 +22,26 @@ public class FertilizerRequest {
     @SerializedName("soil_texture_in_soil")
     private String mSoilTextureInSoil;
 
-    public Long getCropId() {
+    public FertilizerRequest() {
+    }
+
+    public FertilizerRequest(Integer mCropId, String mKAmountInSoil, String mNAmountInSoil, String mOrganicMatterInSoil,
+                             String mPAmountInSoil, Double mPh, String mRegion, String mSoilTextureInSoil) {
+        this.mCropId = mCropId;
+        this.mKAmountInSoil = mKAmountInSoil;
+        this.mNAmountInSoil = mNAmountInSoil;
+        this.mOrganicMatterInSoil = mOrganicMatterInSoil;
+        this.mPAmountInSoil = mPAmountInSoil;
+        this.mPh = mPh;
+        this.mRegion = mRegion;
+        this.mSoilTextureInSoil = mSoilTextureInSoil;
+    }
+
+    public Integer getCropId() {
         return mCropId;
     }
 
-    public void setCropId(Long cropId) {
+    public void setCropId(Integer cropId) {
         mCropId = cropId;
     }
 
