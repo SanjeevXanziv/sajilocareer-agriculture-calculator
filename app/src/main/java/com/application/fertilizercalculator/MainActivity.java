@@ -1,6 +1,8 @@
 package com.application.fertilizercalculator;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.AlertDialog;
@@ -10,14 +12,21 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.application.fertilizercalculator.adapter.CropAdapter;
+import com.application.fertilizercalculator.model.Crop;
 import com.application.fertilizercalculator.model.FertilizerRequest;
 import com.application.fertilizercalculator.model.FertilizerResponse;
 import com.application.fertilizercalculator.retrofit.GetDataService;
 import com.application.fertilizercalculator.retrofit.RetrofitClientInstance;
+import com.squareup.picasso.Picasso;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -43,8 +52,11 @@ public class MainActivity extends AppCompatActivity {
     private String region = "Hill";
 
     private Button chooseButton;
-//    private Button calculateButton;
+    private Button calculateButton;
     private RadioGroup nitrogenRadioG;
+
+    private TextView cropName;
+    private ImageView cropImage;
 
 
 
@@ -52,9 +64,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        chooseButton = (Button)findViewById(R.id.chooseButton);
-//        calculateButton = (Button)findViewById(R.id.btnCalculate);
+        chooseButton = (Button)findViewById(R.id.chooseCropButton);
+        calculateButton = (Button)findViewById(R.id.btnCalculate);
         nitrogenRadioG = (RadioGroup) findViewById(R.id.nitrogenRadioG);
+
+        // top crop part.
+        cropName = findViewById(R.id.cropName);
+        cropImage = findViewById(R.id.cropImage);
+
+//        sendFertilizerElementsRequest();
+        clickChooseCropButton();
 
     }
 
@@ -77,23 +96,41 @@ public class MainActivity extends AppCompatActivity {
         chooseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showCropDialog();
+                sendCropListRequest();
             }
         });
     }
 
-    private void showCropDialog(){
+    private void showCropDialog(List<Crop> listOfCrop){
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
         LayoutInflater inflater = getLayoutInflater();
-        View convertView = (View) inflater.inflate(R.layout.dialog_crop_list, null);
-        alertDialog.setView(convertView);
+        View dialogView = (View) inflater.inflate(R.layout.dialog_crop_list, null);
+        alertDialog.setView(dialogView);
         alertDialog.setTitle("Select a Crop");
 
-        RecyclerView recyclerView = convertView.findViewById(R.id.cropRecyclerView);
+        RecyclerView cropRecyclerView = dialogView.findViewById(R.id.cropRecyclerView);
+        cropRecyclerView.setHasFixedSize(true);
+        CropAdapter adapter = new CropAdapter(listOfCrop,this,new CropAdapter.OnProvideCrop(){
+            @Override
+            public void selectedCrop(Crop crop) {
+                cropID = crop.getId();
+                cropName.setText(crop.getName());
+                if (crop.getPhoto() != null && crop.getPhoto().equals("")){
+                    Picasso.with(MainActivity.this).load(crop.getPhoto()).into(cropImage);
+                }
 
-//        ListView lv = (ListView) convertView.findViewById(R.id.lv);
-//        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,names);
-//        lv.setAdapter(adapter);
+            }
+
+
+
+        });
+
+//        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(MainActivity.this, 3);
+        cropRecyclerView.setLayoutManager(layoutManager);
+        cropRecyclerView.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+
         alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -102,6 +139,7 @@ public class MainActivity extends AppCompatActivity {
         });
         alertDialog.setCancelable(true);
         alertDialog.show();
+
     }
 
     private void sendFertilizerElementsRequest(){
@@ -119,11 +157,14 @@ public class MainActivity extends AppCompatActivity {
 
                 Toast.makeText(MainActivity.this, "Success : "+call.toString(), Toast.LENGTH_SHORT).show();
                 Log.d("MA Success", call.toString());
-//                generateDataList(response.body());
-                if (response.body().getUrea() != null){
-                    String Urea = response.body().getUrea().toString();
-                    Log.d("MA Urea", Urea);
+                if (response.code() == 200){
+                    // go to Fertilizer activity.
                 }
+                else {
+                    Toast.makeText(MainActivity.this, "There is something error: "+ response.message(), Toast.LENGTH_SHORT).show();
+                }
+
+
 
             }
 
@@ -137,6 +178,36 @@ public class MainActivity extends AppCompatActivity {
 
         });
     }
+
+
+    private void sendCropListRequest(){
+        GetDataService service = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
+        Call<List<Crop>> call = service.getCropListRequest();
+        call.enqueue(new Callback<List<Crop>>() {
+            @Override
+            public void onResponse(Call<List<Crop>> call, Response<List<Crop>> response) {
+
+                if (response.code() == 200){
+                    // show cropdialog , print list siz
+                    Log.d("CropSize : ", response.body().size()+"");
+
+                    List<Crop> list = (List<Crop>)response.body();
+                    showCropDialog(list);
+
+                }else {
+                    Toast.makeText(MainActivity.this,"CropList cant be retrieved.", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<List<Crop>> call, Throwable t) {
+
+                Toast.makeText(MainActivity.this, "Something went wrong...Please try later!", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
 
 }
 
