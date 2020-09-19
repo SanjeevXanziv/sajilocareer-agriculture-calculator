@@ -29,7 +29,7 @@ public class CropAdapter extends RecyclerView.Adapter<CropAdapter.MyCropHolderVi
     }
 
     public interface OnProvideCrop{
-        public void selectedCrop(Crop crop);
+         void selectedCrop(Crop crop);
     }
 
 
@@ -39,7 +39,6 @@ public class CropAdapter extends RecyclerView.Adapter<CropAdapter.MyCropHolderVi
     public CropAdapter.MyCropHolderView onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
         View view = layoutInflater.inflate(R.layout.card_crop, parent, false);
-
         return new MyCropHolderView(view);
     }
 
@@ -49,7 +48,7 @@ public class CropAdapter extends RecyclerView.Adapter<CropAdapter.MyCropHolderVi
         String cropName = crop.getName() + "\n ("+ crop.getProductType()+")";
         cropHolder.tvCropName.setText(cropName);
         // set network image.
-        if (crop.getPhoto() != null && crop.getPhoto().equals("")){
+        if (crop.getPhoto() != null && !crop.getPhoto().equals("")){
             Picasso.with(context).load(crop.getPhoto()).into(cropHolder.ivCropImage);
         }
 

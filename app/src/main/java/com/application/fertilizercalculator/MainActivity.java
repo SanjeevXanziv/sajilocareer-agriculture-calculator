@@ -2,16 +2,17 @@ package com.application.fertilizercalculator;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -35,7 +36,6 @@ import retrofit2.Response;
 public class MainActivity extends AppCompatActivity {
 
 
-    private Double phValue = 6.5;
     private Integer cropID;
     /*private String nitrogenLevel = this.getResources().getString(R.string.high);
     private String phosphorousLevel = this.getResources().getString(R.string.high);
@@ -54,9 +54,16 @@ public class MainActivity extends AppCompatActivity {
     private Button chooseButton;
     private Button calculateButton;
     private RadioGroup nitrogenRadioG;
+    private RadioGroup phosphorousRadioG;
+    private RadioGroup potassiumRadioG;
+    private RadioGroup omRadioG;
+    private RadioGroup regionRadioG;
+    private RadioGroup soilTextureRadioG;
 
     private TextView cropName;
     private ImageView cropImage;
+
+    private EditText etPhValue;
 
 
 
@@ -67,25 +74,159 @@ public class MainActivity extends AppCompatActivity {
         chooseButton = (Button)findViewById(R.id.chooseCropButton);
         calculateButton = (Button)findViewById(R.id.btnCalculate);
         nitrogenRadioG = (RadioGroup) findViewById(R.id.nitrogenRadioG);
+        phosphorousRadioG = (RadioGroup) findViewById(R.id.phosphorousRadioG);
+        potassiumRadioG = (RadioGroup) findViewById(R.id.potassiumRadioG);
+        omRadioG = (RadioGroup) findViewById(R.id.omRadioG);
+        regionRadioG = (RadioGroup) findViewById(R.id.regionRadioG);
+        soilTextureRadioG = (RadioGroup) findViewById(R.id.soilTextureRadioG);
+
+        // edittext
+        etPhValue = findViewById(R.id.phValue);
 
         // top crop part.
         cropName = findViewById(R.id.cropName);
         cropImage = findViewById(R.id.cropImage);
 
-//        sendFertilizerElementsRequest();
+        clickAllRadioGroup();
         clickChooseCropButton();
+        clickCalculateButton();
 
+    }
+
+
+    private void clickCalculateButton(){
+        calculateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (onValid()){
+                    sendFertilizerElementsRequest();
+                }
+
+            }
+        });
+
+    }
+
+    private Boolean onValid(){
+        if (cropID == null){
+            Toast.makeText(MainActivity.this,"Choose Crop first", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (etPhValue.getText().toString().equals("")){
+            Toast.makeText(MainActivity.this,"PhValue should be given", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (nitrogenLevel.isEmpty()){
+            return false;
+        }
+
+        if (phosphorousLevel.isEmpty()){
+            return false;
+        }
+
+        if (potassiumLevel.isEmpty()){
+            return false;
+        }
+        if (omLevel.isEmpty()){
+            return false;
+        }
+        if (soilTexture.isEmpty()){
+            return false;
+        }
+
+        if (region.isEmpty()){
+            return false;
+        }
+
+        return true;
+
+    }
+
+    private void clickAllRadioGroup(){
+        clickNitrogenRadioGroup();
+        clickPhosPhorousRadioGroup();
+        clickPotassiumRadioGroup();
+        clickOMRadioGroup();
+        clickSoilTextureRadioGroup();
+        clickRegionRadioGroup();
     }
 
 
     private void clickNitrogenRadioGroup(){
         nitrogenRadioG.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            public void onCheckedChanged(RadioGroup arg0, int id) {
-                int radioButtonID = arg0.getCheckedRadioButtonId();
-                View view = arg0.findViewById(radioButtonID);
-                int idx = arg0.indexOfChild(view);
-                RadioButton r = (RadioButton) arg0.getChildAt(idx);
-                nitrogenLevel = r.getText().toString();
+            public void onCheckedChanged(RadioGroup radioGroup, int id) {
+                int radioButtonID = radioGroup.getCheckedRadioButtonId();
+                View view = radioGroup.findViewById(radioButtonID);
+                int idx = radioGroup.indexOfChild(view);
+                RadioButton radioButton = (RadioButton) radioGroup.getChildAt(idx);
+                nitrogenLevel = radioButton.getText().toString();
+
+                Log.d("NitrogenLevel: ", nitrogenLevel);
+
+            }
+        });
+    }
+
+    private void clickPhosPhorousRadioGroup(){
+        phosphorousRadioG.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            public void onCheckedChanged(RadioGroup radioGroup, int id) {
+                int radioButtonID = radioGroup.getCheckedRadioButtonId();
+                View view = radioGroup.findViewById(radioButtonID);
+                int idx = radioGroup.indexOfChild(view);
+                RadioButton radioButton = (RadioButton) radioGroup.getChildAt(idx);
+                phosphorousLevel = radioButton.getText().toString();
+
+
+            }
+        });
+    }
+
+    private void clickPotassiumRadioGroup(){
+        potassiumRadioG.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            public void onCheckedChanged(RadioGroup radioGroup, int id) {
+                int radioButtonID = radioGroup.getCheckedRadioButtonId();
+                View view = radioGroup.findViewById(radioButtonID);
+                int idx = radioGroup.indexOfChild(view);
+                RadioButton radioButton = (RadioButton) radioGroup.getChildAt(idx);
+                potassiumLevel = radioButton.getText().toString();
+
+            }
+        });
+    }
+    private void clickOMRadioGroup(){
+        omRadioG.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            public void onCheckedChanged(RadioGroup radioGroup, int id) {
+                int radioButtonID = radioGroup.getCheckedRadioButtonId();
+                View view = radioGroup.findViewById(radioButtonID);
+                int idx = radioGroup.indexOfChild(view);
+                RadioButton radioButton = (RadioButton) radioGroup.getChildAt(idx);
+                omLevel = radioButton.getText().toString();
+
+            }
+        });
+    }
+    private void clickSoilTextureRadioGroup(){
+        soilTextureRadioG.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            public void onCheckedChanged(RadioGroup radioGroup, int id) {
+                int radioButtonID = radioGroup.getCheckedRadioButtonId();
+                View view = radioGroup.findViewById(radioButtonID);
+                int idx = radioGroup.indexOfChild(view);
+                RadioButton radioButton = (RadioButton) radioGroup.getChildAt(idx);
+                soilTexture = radioButton.getText().toString();
+
+            }
+        });
+    }
+    private void clickRegionRadioGroup(){
+        regionRadioG.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            public void onCheckedChanged(RadioGroup radioGroup, int id) {
+                int radioButtonID = radioGroup.getCheckedRadioButtonId();
+                View view = radioGroup.findViewById(radioButtonID);
+                int idx = radioGroup.indexOfChild(view);
+                RadioButton radioButton = (RadioButton) radioGroup.getChildAt(idx);
+                region = radioButton.getText().toString();
+
 
             }
         });
@@ -102,11 +243,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showCropDialog(List<Crop> listOfCrop){
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
+        final AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = (View) inflater.inflate(R.layout.dialog_crop_list, null);
         alertDialog.setView(dialogView);
         alertDialog.setTitle("Select a Crop");
+
 
         RecyclerView cropRecyclerView = dialogView.findViewById(R.id.cropRecyclerView);
         cropRecyclerView.setHasFixedSize(true);
@@ -115,15 +257,16 @@ public class MainActivity extends AppCompatActivity {
             public void selectedCrop(Crop crop) {
                 cropID = crop.getId();
                 cropName.setText(crop.getName());
-                if (crop.getPhoto() != null && crop.getPhoto().equals("")){
+                if (crop.getPhoto() != null && !crop.getPhoto().equals("")){
                     Picasso.with(MainActivity.this).load(crop.getPhoto()).into(cropImage);
                 }
 
             }
 
 
-
         });
+
+
 
 //        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(MainActivity.this, 3);
@@ -131,7 +274,7 @@ public class MainActivity extends AppCompatActivity {
         cropRecyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
 
-        alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        alertDialog.setNegativeButton("Ok", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
@@ -145,7 +288,11 @@ public class MainActivity extends AppCompatActivity {
     private void sendFertilizerElementsRequest(){
         GetDataService service = RetrofitClientInstance.getRetrofitInstance().create(GetDataService.class);
 
-        FertilizerRequest request = new FertilizerRequest(cropID,potassiumLevel,nitrogenLevel, omLevel,phosphorousLevel,phValue,region,soilTexture);
+        String phValueString = etPhValue.getText().toString();
+        Double phValueDouble = Double.parseDouble(phValueString);
+
+        FertilizerRequest request = new FertilizerRequest(cropID,potassiumLevel,nitrogenLevel, omLevel,
+                phosphorousLevel,phValueDouble,region,soilTexture);
 
         Call<FertilizerResponse> call = service.getFertilizerElementsRequest(request);
         call.enqueue(new Callback<FertilizerResponse>() {
@@ -159,6 +306,8 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("MA Success", call.toString());
                 if (response.code() == 200){
                     // go to Fertilizer activity.
+                    FertilizerResponse fertilizerResponse = (FertilizerResponse)response.body();
+                    goToFertilizerActivity(fertilizerResponse);
                 }
                 else {
                     Toast.makeText(MainActivity.this, "There is something error: "+ response.message(), Toast.LENGTH_SHORT).show();
@@ -177,6 +326,12 @@ public class MainActivity extends AppCompatActivity {
 
 
         });
+    }
+
+    private void goToFertilizerActivity(FertilizerResponse response){
+        Intent intent = new Intent(this,FertilizerActivity.class);
+        intent.putExtra("Fertilizer",response);
+        this.startActivity(intent);
     }
 
 
