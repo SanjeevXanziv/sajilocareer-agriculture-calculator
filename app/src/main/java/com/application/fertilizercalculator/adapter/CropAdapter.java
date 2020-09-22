@@ -1,10 +1,12 @@
 package com.application.fertilizercalculator.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -14,6 +16,7 @@ import com.application.fertilizercalculator.R;
 import com.application.fertilizercalculator.model.Crop;
 import com.squareup.picasso.Picasso;
 
+import java.util.Collections;
 import java.util.List;
 
 public class CropAdapter extends RecyclerView.Adapter<CropAdapter.MyCropHolderView> {
@@ -26,6 +29,7 @@ public class CropAdapter extends RecyclerView.Adapter<CropAdapter.MyCropHolderVi
         this.list = list;
         this.context = context;
         this.listener = listener;
+        Collections.shuffle(list);
     }
 
     public interface OnProvideCrop{
@@ -44,13 +48,40 @@ public class CropAdapter extends RecyclerView.Adapter<CropAdapter.MyCropHolderVi
 
     @Override
     public void onBindViewHolder(@NonNull CropAdapter.MyCropHolderView cropHolder, int position) {
+
         Crop crop = list.get(position);
-        String cropName = crop.getName() + "\n ("+ crop.getProductType()+")";
-        cropHolder.tvCropName.setText(cropName);
+//        String cropName = crop.getName() + "\n ("+ crop.getProductType()+")";
+        cropHolder.tvCropName.setText(crop.getName());
         // set network image.
         if (crop.getPhoto() != null && !crop.getPhoto().equals("")){
             Picasso.with(context).load(crop.getPhoto()).into(cropHolder.ivCropImage);
         }
+
+
+        if (crop.getSelected()){
+
+            cropHolder.itemCardView.setBackground(context.getDrawable(R.drawable.bg_focused));
+
+        }else{
+//            cropHolder.itemCardView.setBackground(context.getDrawable(R.drawable.card_bg));
+            cropHolder.itemCardView.setBackgroundColor(Color.WHITE);
+        }
+
+    }
+
+
+    public void checkSelected(Crop selectedCrop){
+        for (Crop item:list) {
+            if (selectedCrop.getId().equals(item.getId())){
+                item.setSelected(true);
+            }else {
+                item.setSelected(false);
+            }
+        }
+
+//        notifyDataSetChanged();
+
+
 
     }
 
@@ -64,6 +95,7 @@ public class CropAdapter extends RecyclerView.Adapter<CropAdapter.MyCropHolderVi
 
         private TextView tvCropName;
         private ImageView ivCropImage;
+        private LinearLayout itemCardView;
 
         public MyCropHolderView(@NonNull View itemView) {
             super(itemView);
@@ -72,12 +104,18 @@ public class CropAdapter extends RecyclerView.Adapter<CropAdapter.MyCropHolderVi
 
             tvCropName = itemView.findViewById(R.id.cropName);
             ivCropImage = itemView.findViewById(R.id.cropImage);
+            itemCardView = itemView.findViewById(R.id.itemLinearLayout);
 
             itemView.setOnClickListener( new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
                     int cropPosition = getAdapterPosition();
                     listener.selectedCrop(list.get(cropPosition));
+                    checkSelected(list.get(cropPosition));
+                    notifyDataSetChanged();
+
+
+
                 }
             });
 

@@ -16,6 +16,16 @@ public class Crop {
     @SerializedName("product_type")
     private String productType;
 
+     Boolean isSelected = false;
+
+    public Boolean getSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(Boolean selected) {
+        isSelected = selected;
+    }
+
     public Integer getId() {
         return id;
     }

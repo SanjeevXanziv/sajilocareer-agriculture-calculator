@@ -7,4 +7,5 @@
     <color name="dap_color">#97C749</color>
     <color name="mop_color">#29AB4D</color>
     <color name="om_color">#188B6F</color>
+    <color name="white_color">#fff</color>
 </resources>
